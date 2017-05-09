@@ -14,15 +14,28 @@ namespace Go
         bool danteForward = true;
         bool danteHop = true;
 
+
+        Rectangle screenRectangle = new Rectangle(0, 0, 800, 480);
+        
+
         Texture2D paddle;
         Vector2 paddlePos;
 
         int paddleTopLeftX;
         int paddleTopLeftY;
-        int paddleBottomLeft;
-        int paddleBottomRight;
+        int danteTopLeftX = 400;
+        int danteTopLeftY = 200;
 
-        Rectangle paddleRectangle;
+        protected bool Collide()
+        {
+            Rectangle paddleRectangle = new Rectangle((int)paddlePos.X, (int)paddlePos.Y, 125, 49);
+            Rectangle danteRectangle = new Rectangle((int)texturePos.X, (int)texturePos.Y, 125, 105);
+
+
+            return danteRectangle.Intersects(paddleRectangle);
+        }
+
+        
 
         //Texture2D texture;
         //Vector2 position;
@@ -31,15 +44,21 @@ namespace Go
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            texturePos = new Vector2(0, 0);
+
+
+            /*texturePos = new Vector2(danteTopLeftX, danteTopLeftY);
             paddlePos = new Vector2(325, 431);
+
+            danteTopLeftX = 0;
+            danteTopLeftY = 0;
 
             paddleTopLeftX = 325;
             paddleTopLeftY = 431;
 
+            screenRectangle = new Rectangle(-1, -1, 801, 481);
+            */
 
-            paddleRectangle = new Rectangle(paddleTopLeftX, paddleTopLeftY, 125, 49);
-            
+                        
 
             #region
             // this.IsFixedTimeStep = true;
@@ -55,6 +74,13 @@ namespace Go
         {
             // TODO: Add your initialization logic here
 
+            //paddlePos.X = paddleTopLeftX;
+            //paddlePos.Y = paddleTopLeftY;
+
+            //texturePos.X = 400;
+            //texturePos.Y = 200;
+            paddlePos.X = 325;
+            paddlePos.Y = 431;
 
             base.Initialize();
 
@@ -130,20 +156,56 @@ namespace Go
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
-            
+            //if (Keyboard.GetState().IsKeyDown(Keys.Up))
+                //paddlePos.Y -= 1;
+            //if (Keyboard.GetState().IsKeyDown(Keys.Down))
+               // paddlePos.Y += 1;
+            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+                paddlePos.X -= 1;
+            if (Keyboard.GetState().IsKeyDown(Keys.Right))
+                paddlePos.X += 1;
+            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+                texturePos.X += 1;
+            if(Collide())
+            {
+                danteHop = false; 
+            }
 
             if (danteForward == true)
-                 texturePos.X += 1;            
+                texturePos.X += 1;
             if (danteForward == false)
-                 texturePos.X -= 1;
-
-            if (texturePos.X == this.GraphicsDevice.Viewport.Width - 125)
-                danteForward = false;
-            if (texturePos.X == this.GraphicsDevice.Viewport.Width - this.GraphicsDevice.Viewport.Width)
-                danteForward = true;
+                texturePos.X -= 1;
 
             if (danteHop == true)
+                texturePos.Y += 1;
+            if (danteHop == false)
+                texturePos.Y -= 1;
+
+            if (texturePos.X <= 0)
+                danteForward = true;
+            if (texturePos.Y < 0)
+                danteHop = true;
+            if (texturePos.X > 800 - 125)
+                danteForward = false;
+            if (texturePos.Y > 480 - 105)
+                danteHop = false;
+
+
+
+
+            /*if (danteForward == true)
+                 texturePos.X += 1;            
+            if (danteForward == false)
+                 texturePos.X -= 1;*/
+            /* 
+            texturePos.X += 1;
+
+            if (danteRectangle.Intersects(screenRectangle))
+                texturePos = new Vector2 (-texturePos.X, texturePos.Y);
+            if (danteRectangle.Left == this.GraphicsDevice.Viewport.Width - this.GraphicsDevice.Viewport.Width)
+                danteForward = true;*/
+
+            /*if (danteHop == true)
                 texturePos.Y += 1;
             if (danteHop == false)
                 texturePos.Y -= 1;
@@ -151,10 +213,10 @@ namespace Go
             if (texturePos.Y == this.GraphicsDevice.Viewport.Height - 105)
                 danteHop = false;
             if (texturePos.Y == this.GraphicsDevice.Viewport.Height - this.GraphicsDevice.Viewport.Height || texturePos.Y == paddleRectangle.Top)
-                danteHop = true;
+                danteHop = true;*/
 
-            
-            
+
+
 
             /*texturePos.X += 1;
             if (texturePos.X == this.GraphicsDevice.Viewport.Width)
