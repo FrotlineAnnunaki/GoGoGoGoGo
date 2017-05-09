@@ -12,10 +12,15 @@ namespace Go
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        Texture2D texture;
+        Vector2 position;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            this.IsFixedTimeStep = false;
+            this.graphics.SynchronizeWithVerticalRetrace = false;
         }
 
         /// <summary>
@@ -28,6 +33,12 @@ namespace Go
         {
             // TODO: Add your initialization logic here
 
+            position = new Vector2(0, 0);
+            texture = new Texture2D(this.GraphicsDevice, 100, 100);
+            Color[] colorData = new Color[100 * 100];
+            for (int i = 0; i < 10000; i++)
+                colorData[i] = Color.Red;
+            texture.SetData<Color>(colorData);
             base.Initialize();
         }
 
@@ -59,12 +70,17 @@ namespace Go
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            if (IsActive)
+            {
+                if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                    Exit();
+                position.X += 1;
+                if (position.X > this.GraphicsDevice.Viewport.Width)
+                    position.X = 0;
+                // TODO: Add your update logic here
 
-            // TODO: Add your update logic here
-
-            base.Update(gameTime);
+                base.Update(gameTime);
+            }
         }
 
         /// <summary>
@@ -74,6 +90,13 @@ namespace Go
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            var fps = 1 / gameTime.ElapsedGameTime.TotalSeconds;
+            Window.Title = fps.ToString();
+            spriteBatch.Begin();
+            spriteBatch.Draw(texture, position);
+            spriteBatch.End();
+
 
             // TODO: Add your drawing code here
 
